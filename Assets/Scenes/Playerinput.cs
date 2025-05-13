@@ -10,7 +10,10 @@ public class Playerinput : MonoBehaviour
     private float moveInput;
     private Animator animator;
     public int mylife = 100; //定義玩家生命值
-   // public GameManager gameManager;
+    public GameManager gameManager;
+    public Transform attackPoint;
+    public Collider2D attackCollider; // Hitbox範圍碰撞器
+    public float attackDuration = 0.3f; //攻擊時間
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -18,7 +21,7 @@ public class Playerinput : MonoBehaviour
     {
         pl = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-
+        attackCollider.enabled = false;
 
 
     }
@@ -73,8 +76,15 @@ public class Playerinput : MonoBehaviour
 
             Debug.Log("attack");
             animator.SetTrigger("attack"); //播放攻擊動畫
-
+            StartCoroutine(AttackRoutine()); //執行attackroutine的程式
         }
+    }
+    //設定attackroutine要做什麼
+    private System.Collections.IEnumerator AttackRoutine()
+    {
+        attackCollider.enabled = true;
+        yield return new WaitForSeconds(attackDuration);
+        attackCollider.enabled = false;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -84,8 +94,8 @@ public class Playerinput : MonoBehaviour
         {
             Debug.Log("hurt");
             animator.SetTrigger("hurt");
-            //mylife -= 10; //生命值扣10
-           // gameManager.m_HPBar.fillAmount -= 0.1f;// 血條填充長度減短0.1長度
+            mylife -= 10; //生命值扣10
+            gameManager.m_HPBar.fillAmount -= 0.1f;// 血條填充長度減短0.1長度
         }
 
 
